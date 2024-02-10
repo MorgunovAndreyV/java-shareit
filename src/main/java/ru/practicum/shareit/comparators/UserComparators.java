@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public class UserComparators {
 
-    public static Comparator<User> compareUsersById = (user1, user2) -> {
+    public static final Comparator<User> compareUsersById = (user1, user2) -> {
         if (user1.getId() != null && user2.getId() != null) {
             return user1.getId().compareTo(user2.getId());
 

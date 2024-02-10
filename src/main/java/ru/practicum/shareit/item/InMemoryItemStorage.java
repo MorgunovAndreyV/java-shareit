@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Set<Item> getItemsByText(String text) {
-        if (text == "") {
+        if (Objects.equals(text, "")) {
             return new HashSet<Item>();
         }
 

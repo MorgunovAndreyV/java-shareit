@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public class ItemComparators {
 
-    public static Comparator<Item> compareItemsById = (item1, item2) -> {
+    public static final Comparator<Item> compareItemsById = (item1, item2) -> {
         if (item1.getId() != null && item2.getId() != null) {
             return item1.getId().compareTo(item2.getId());
 
