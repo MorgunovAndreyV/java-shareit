@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.exception.UserStorageException;
-import ru.practicum.shareit.item.dto.dtoMapper;
+import ru.practicum.shareit.item.dto.DTOMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
 
@@ -37,8 +37,8 @@ public class InMemoryItemStorage implements ItemStorage {
 
         Set<Item> foundItems = items.stream()
                 .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                        item.getDescription().toLowerCase().contains(text.toLowerCase())).
-                collect(Collectors.toSet());
+                        item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .collect(Collectors.toSet());
 
         return foundItems;
     }
@@ -67,7 +67,7 @@ public class InMemoryItemStorage implements ItemStorage {
         }
 
         Item itemFromBase = getItemById(item.getId());
-        itemFromBase.fillFromDto(dtoMapper.getItemDto(item));
+        itemFromBase.fillFromDto(DTOMapper.getItemDto(item));
 
         return itemFromBase;
     }

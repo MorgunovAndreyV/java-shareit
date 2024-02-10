@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Item;
 
-public class dtoMapper {
+public class DTOMapper {
 
     public static Item getItemFromDto(ItemDto dto) {
         return Item.builder()

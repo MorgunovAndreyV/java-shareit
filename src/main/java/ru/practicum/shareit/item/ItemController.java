@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comparators.ItemComparators;
+import ru.practicum.shareit.item.dto.DTOMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.dtoMapper;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -24,13 +24,13 @@ public class ItemController {
         List<Item> sortedItemList = new ArrayList<>(itemService.getByOwner(id));
         sortedItemList.sort(ItemComparators.compareItemsById);
 
-        return sortedItemList.stream().map(dtoMapper::getItemDto).collect(Collectors.toList());
+        return sortedItemList.stream().map(DTOMapper::getItemDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ItemDto getById(@PathVariable Long id) {
 
-        return dtoMapper.getItemDto(itemService.getItemById(id));
+        return DTOMapper.getItemDto(itemService.getItemById(id));
     }
 
     @GetMapping("/search")
@@ -38,13 +38,13 @@ public class ItemController {
         List<Item> sortedItemList = new ArrayList<>(itemService.getAvailableItemsByText(text));
         sortedItemList.sort(ItemComparators.compareItemsById);
 
-        return sortedItemList.stream().map(dtoMapper::getItemDto).collect(Collectors.toList());
+        return sortedItemList.stream().map(DTOMapper::getItemDto).collect(Collectors.toList());
     }
 
     @PostMapping
     public ItemDto addNew(@RequestHeader("X-Sharer-User-Id") Long id, @RequestBody ItemDto item) {
 
-        return dtoMapper.getItemDto(itemService.addNew(dtoMapper.getItemFromDto(item), id));
+        return DTOMapper.getItemDto(itemService.addNew(DTOMapper.getItemFromDto(item), id));
     }
 
     @PatchMapping("/{id}")
@@ -52,7 +52,7 @@ public class ItemController {
                           @RequestBody ItemDto item) {
         item.setId(itemId);
 
-        return dtoMapper.getItemDto(itemService.change(dtoMapper.getItemFromDto(item), userId));
+        return DTOMapper.getItemDto(itemService.change(DTOMapper.getItemFromDto(item), userId));
     }
 
 }
