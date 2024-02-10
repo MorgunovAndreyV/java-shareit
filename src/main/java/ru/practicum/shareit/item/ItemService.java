@@ -31,7 +31,7 @@ public class ItemService {
 
     public Set<Item> getAvailableItemsByText(String text) {
         return itemStorage.getItemsByText(text).stream()
-                .filter(item -> item.getAvailable()==true).collect(Collectors.toSet());
+                .filter(item -> item.getAvailable() == true).collect(Collectors.toSet());
     }
 
     public Item change(Item item, Long id) throws RecordNotFoundException, UserValidationException {

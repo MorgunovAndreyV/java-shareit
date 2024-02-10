@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class InMemoryUserStorage implements UserStorage {
     private Set<User> users = new HashSet<>();
     private Long lastRecordId = 0L;
+
     @Override
     public Set<User> getAll() {
         return users;
@@ -43,7 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User change(User user) {
         User userFromBase = getUserById(user.getId());
 
-        if (user.getEmail()!=null) {
+        if (user.getEmail() != null) {
             validateEmail(user, users);
         }
 

@@ -12,7 +12,8 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    @Qualifier("InMemoryUserStorage") private final UserStorage userStorage;
+    @Qualifier("InMemoryUserStorage")
+    private final UserStorage userStorage;
 
     public Set<User> getAll() {
         return userStorage.getAll();
@@ -30,7 +31,7 @@ public class UserService {
         return userStorage.change(user);
     }
 
-    public void delete(Long id)  throws RecordNotFoundException {
+    public void delete(Long id) throws RecordNotFoundException {
         userStorage.deleteUserById(id);
 
     }
