@@ -1,11 +1,12 @@
 package ru.practicum.shareit.user;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.exception.StoredDataConflict;
 import ru.practicum.shareit.exception.UserStorageException;
 import ru.practicum.shareit.exception.UserValidationException;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component("InMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private Set<User> users = new HashSet<>();
@@ -35,8 +35,6 @@ public class InMemoryUserStorage implements UserStorage {
         assignNewId(user);
         users.add(user);
 
-        log.info("Новый пользователь добавлен успешно. id:" + user.getId());
-
         return user;
     }
 
@@ -48,9 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
             validateEmail(user, users);
         }
 
-        userFromBase.fillFromDto(user.getDto());
-
-        log.info("Запись пользователя изменена успешно. id:" + user.getId());
+        UserMapper.fillFromDto(UserMapper.toDto(user), userFromBase);
 
         return userFromBase;
     }
@@ -102,7 +98,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
-    private static void validateEmail(User user, Set<User> userList) {
+    private void validateEmail(User user, Set<User> userList) {
         if (user.getEmail() != null) {
             if (!user.getEmail().contains("@")) {
                 throw new UserValidationException("Некорректный формат почты");
@@ -120,7 +116,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
-    static List<User> getUserByEmail(String email, Set<User> userList) {
+    List<User> getUserByEmail(String email, Set<User> userList) {
         return userList.stream()
                 .filter(user -> email.equals(user.getEmail())).collect(Collectors.toList());
     }

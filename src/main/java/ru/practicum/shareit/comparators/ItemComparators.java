@@ -11,13 +11,17 @@ public class ItemComparators {
         if (item1.getId() != null && item2.getId() != null) {
             return item1.getId().compareTo(item2.getId());
 
+        } else if (item1.getId() == null && item2.getId() != null) {
+            return -1;
+
+        } else if (item1.getId() != null) {
+            return 1;
+
         } else {
-            if (item1.getId() == null && item2.getId() != null) {
-                return -1;
-            } else if (item1.getId() != null) {
-                return 1;
-            } else return 0;
+            return 0;
+
         }
 
     };
+
 }

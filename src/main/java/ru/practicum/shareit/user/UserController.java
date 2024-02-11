@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comparators.UserComparators;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +25,23 @@ public class UserController {
         List<User> sortedUserList = new ArrayList<>(userService.getAll());
         sortedUserList.sort(UserComparators.compareUsersById);
 
-        return sortedUserList.stream().map(User::getDto).collect(Collectors.toList());
+        return sortedUserList.stream().map(UserMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable Long id) {
-        return userService.getUserById(id).getDto();
+        return UserMapper.toDto(userService.getUserById(id));
     }
 
     @PostMapping
-    public User addNew(@RequestBody UserDto user) {
-        return userService.addNew(user.getUser());//.getDto();
+    public UserDto addNew(@RequestBody UserDto user) {
+        return UserMapper.toDto(userService.addNew(UserMapper.toEntity(user)));
     }
 
     @PatchMapping("/{id}")
     public UserDto change(@PathVariable Long id, @RequestBody UserDto user) {
         user.setId(id);
-        return userService.change(user.getUser()).getDto();
+        return UserMapper.toDto(userService.change(UserMapper.toEntity(user)));
     }
 
     @DeleteMapping("/{id}")

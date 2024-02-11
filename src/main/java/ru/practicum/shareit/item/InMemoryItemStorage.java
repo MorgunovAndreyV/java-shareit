@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.exception.UserStorageException;
-import ru.practicum.shareit.item.dto.DTOMapper;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
 
@@ -56,8 +56,6 @@ public class InMemoryItemStorage implements ItemStorage {
         assignNewId(item);
         items.add(item);
 
-        log.info("Новая вещь добавлена успешно. id:" + item.getId());
-
         return item;
     }
 
@@ -68,7 +66,7 @@ public class InMemoryItemStorage implements ItemStorage {
         }
 
         Item itemFromBase = getItemById(item.getId());
-        itemFromBase.fillFromDto(DTOMapper.getItemDto(item));
+        ItemMapper.fillFromDto(ItemMapper.toDto(item), itemFromBase);
 
         return itemFromBase;
     }

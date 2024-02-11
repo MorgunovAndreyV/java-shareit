@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemStorageException;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemService {
@@ -22,7 +24,10 @@ public class ItemService {
     }
 
     public Item addNew(Item item, Long id) throws ItemStorageException {
-        return itemStorage.addNew(item, id);
+        Item newItem = itemStorage.addNew(item, id);
+        log.info("Новая вещь добавлена успешно. id:" + item.getId());
+
+        return newItem;
     }
 
     public Item getItemById(Long id) throws RecordNotFoundException {
@@ -35,7 +40,10 @@ public class ItemService {
     }
 
     public Item change(Item item, Long id) throws RecordNotFoundException, UserValidationException {
-        return itemStorage.change(item, id);
+        Item changedItem = itemStorage.change(item, id);
+        log.info("Запись вещи изменена успешно. id:" + item.getId());
+
+        return changedItem;
     }
 
 }
