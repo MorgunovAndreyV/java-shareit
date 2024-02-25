@@ -30,6 +30,33 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleWrongBookingData(final BookingValidationException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleWrongCommentData(final CommentValidationException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleBookingControllerBadReques(final BookingControllerBadRequestException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -51,7 +78,16 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionResponse handleRecordNotFoundException(final StoredDataConflict e) {
+    public ExceptionResponse handleRecordNotFoundException(final StoredDataConflictException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ExceptionResponse handleForbiddenAction(final ForbiddenActionException e) {
         log.error(String.format(e.getMessage()));
         return new ExceptionResponse(
                 String.format(e.getMessage())

@@ -1,20 +1,17 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.RecordNotFoundException;
-import ru.practicum.shareit.exception.StoredDataConflict;
-import ru.practicum.shareit.exception.UserStorageException;
-import ru.practicum.shareit.exception.UserValidationException;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component("InMemoryUserStorage")
+@Primary
 public class InMemoryUserStorage implements UserStorage {
     private Set<User> users = new HashSet<>();
     private Long lastRecordId = 0L;
@@ -26,12 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addNew(User user) {
-        userCreateValidations(user);
-
-        if (users.contains(user)) {
-            throw new UserStorageException("Такой пользователь уже добавлен");
-        }
-
         assignNewId(user);
         users.add(user);
 
@@ -41,11 +32,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User change(User user) {
         User userFromBase = getUserById(user.getId());
-
-        if (user.getEmail() != null) {
-            validateEmail(user, users);
-        }
-
         UserMapper.fillFromDto(UserMapper.toDto(user), userFromBase);
 
         return userFromBase;
@@ -81,44 +67,6 @@ public class InMemoryUserStorage implements UserStorage {
         lastRecordId++;
         user.setId(lastRecordId);
 
-    }
-
-    private void userCreateValidations(User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            throw new UserValidationException("Имя не может быть пустым");
-
-        }
-
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            throw new UserValidationException("Почта не может быть пустой");
-
-        }
-
-        validateEmail(user, users);
-
-    }
-
-    private void validateEmail(User user, Set<User> userList) {
-        if (user.getEmail() != null) {
-            if (!user.getEmail().contains("@")) {
-                throw new UserValidationException("Некорректный формат почты");
-
-            }
-
-        }
-
-        List<User> usersWithThisEmail = getUserByEmail(user.getEmail(), userList).stream()
-                .filter(user1 -> !user1.getId().equals(user.getId())).collect(Collectors.toList());
-
-        if (!usersWithThisEmail.isEmpty()) {
-            throw new StoredDataConflict("Почта уже используется другим пользователем");
-        }
-
-    }
-
-    List<User> getUserByEmail(String email, Set<User> userList) {
-        return userList.stream()
-                .filter(user -> email.equals(user.getEmail())).collect(Collectors.toList());
     }
 
 }

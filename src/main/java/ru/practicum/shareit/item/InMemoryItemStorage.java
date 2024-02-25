@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.exception.RecordNotFoundException;
-import ru.practicum.shareit.exception.UserStorageException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
@@ -18,12 +16,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component("InMemoryItemStorage")
+@RequiredArgsConstructor
 public class InMemoryItemStorage implements ItemStorage {
     private Set<Item> items = new HashSet<>();
+
     @Qualifier("InMemoryUserStorage")
     private final UserStorage userStorage;
+
+
+    @Override
+    public Set<Item> getAll() {
+        return items;
+    }
 
     @Override
     public Set<Item> getByOwner(Long id) {
@@ -46,13 +51,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item addNew(Item item, Long id) {
-        itemCreateValidations(item);
         item.setOwner(userStorage.getUserById(id));
-
-        if (items.contains(item)) {
-            throw new UserStorageException("Такая вещь уже добавлена");
-        }
-
         assignNewId(item);
         items.add(item);
 
@@ -61,10 +60,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item change(Item item, Long id) {
-        if (!userStorage.getUserById(id).equals(getItemById(item.getId()).getOwner())) {
-            throw new RecordNotFoundException("Вещи для указанного владельца не существует");
-        }
-
         Item itemFromBase = getItemById(item.getId());
         ItemMapper.fillFromDto(ItemMapper.toDto(item), itemFromBase);
 
@@ -88,24 +83,6 @@ public class InMemoryItemStorage implements ItemStorage {
     private void assignNewId(Item item) {
         if (items != null) {
             item.setId((long) (items.size() + 1));
-        }
-
-    }
-
-    private void itemCreateValidations(Item item) {
-        if (item.getName() == null || item.getName().isEmpty()) {
-            throw new ItemValidationException("Имя не может быть пустым");
-
-        }
-
-        if (item.getDescription() == null || item.getDescription().isEmpty()) {
-            throw new ItemValidationException("Описание не может быть пустым");
-
-        }
-
-        if (item.getAvailable() == null) {
-            throw new ItemValidationException("Доступность не может быть пустой");
-
         }
 
     }

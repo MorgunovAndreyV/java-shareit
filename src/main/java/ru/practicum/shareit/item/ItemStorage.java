@@ -5,6 +5,8 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Set;
 
 public interface ItemStorage {
+    Set<Item> getAll();
+
     Set<Item> getByOwner(Long id);
 
     Set<Item> getItemsByText(String text);
