@@ -1,7 +1,6 @@
 package ru.practicum.shareit.comparators;
 
 
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import java.util.Comparator;
