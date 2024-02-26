@@ -2,13 +2,14 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.exception.UserStorageException;
 import ru.practicum.shareit.exception.UserValidationException;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,27 +18,26 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    @Qualifier("UserDbStorage")
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     public Set<User> getAll() {
-        return userStorage.getAll();
+        return new HashSet<>(userRepository.findAll());
     }
 
     public User addNew(User user) throws UserStorageException, UserValidationException {
         Set<User> userList = getAll();
 
-        userCreateValidations(user, userList);
+        validateUserData(user, userList);
         validateEmail(user);
 
-        User newUser = userStorage.addNew(user);
+        User newUser = userRepository.save(user);
         log.info("Новый пользователь добавлен успешно. id:" + user.getId());
 
         return newUser;
     }
 
     public User getUserById(Long id) {
-        User user = userStorage.getUserById(id);
+        User user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
             throw new RecordNotFoundException("Пользователь с id " + id + " не найден");
@@ -51,24 +51,26 @@ public class UserService {
             validateEmail(user);
         }
 
-        User changedUser = userStorage.change(user);
+        User userFromBase = getUserById(user.getId());
+        UserMapper.fillFromDto(UserMapper.toDto(user), userFromBase);
+
         log.info("Запись пользователя изменена успешно. id:" + user.getId());
 
-        return changedUser;
+        return userRepository.save(userFromBase);
     }
 
     public void delete(Long id) throws RecordNotFoundException {
-        User user = userStorage.getUserById(id);
+        User user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
             throw new RecordNotFoundException("Пользователь с id " + id + " не найден");
         }
 
-        userStorage.deleteUserById(id);
+        userRepository.deleteById(id);
 
     }
 
-    private void userCreateValidations(User user, Set<User> userList) {
+    private void validateUserData(User user, Set<User> userList) {
         if (user.getName() == null || user.getName().isEmpty()) {
             throw new UserValidationException("Имя не может быть пустым");
 

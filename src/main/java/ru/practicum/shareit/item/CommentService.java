@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
@@ -24,8 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    @Qualifier("CommentDbStorage")
-    private final CommentStorage commentStorage;
+    private final CommentRepository commentRepository;
     private final BookingService bookingService;
     private final UserService userService;
     private final ItemService itemService;
@@ -34,7 +32,7 @@ public class CommentService {
         Item item = itemService.getItemById(itemId);
         User user = userService.getUserById(userId);
 
-        commentPostValidations(item, user, comment);
+        validateCommentData(item, user, comment);
 
         Comment commentFromDto = CommentMapper.toEntity(comment);
 
@@ -42,17 +40,17 @@ public class CommentService {
         commentFromDto.setItem(item);
         commentFromDto.setCreated(LocalDateTime.now());
 
-        Comment newComment = commentStorage.addNew(commentFromDto);
+        Comment newComment = commentRepository.save(commentFromDto);
         log.info("Новый комментарий добавлен успешно. id:" + newComment.getId());
 
         return newComment;
     }
 
     public List<Comment> getByItemId(Long itemId) {
-        return commentStorage.getByItemId(itemId);
+        return commentRepository.findByItemId(itemId);
     }
 
-    private void commentPostValidations(Item item, User user, CommentDto comment) {
+    private void validateCommentData(Item item, User user, CommentDto comment) {
         if (comment.getText() == null || comment.getText().isEmpty()) {
             throw new CommentValidationException("Текст комментария не может быть пустым");
         }

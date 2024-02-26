@@ -2,8 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -25,28 +23,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookingService {
-    @Qualifier("BookingDbStorage")
-    private final BookingStorage bookingStorage;
-    @Autowired
+    private final BookingRepository bookingRepository;
     private final UserService userService;
-    @Autowired
     private final ItemService itemService;
 
     public List<Booking> getByBooker(Long id) {
-        return bookingStorage.getByBooker(id);
+
+        return bookingRepository.findByBookerId(id);
     }
 
     public Booking addNew(BookingDto bookingDto, Long id) {
-        bookingDataValidations(bookingDto, id);
+        validateBookingData(bookingDto, id);
 
         User booker = userService.getUserById(id);
 
         bookingDto.setBooker(UserMapper.toDto(booker));
         bookingDto.setStatus(BookingStatus.WAITING);
 
-        bookingAlreadyExists(BookingMapper.toEntity(bookingDto), bookingStorage.getAll());
+        bookingAlreadyExists(BookingMapper.toEntity(bookingDto), bookingRepository.findAll());
 
-        Booking newBooking = bookingStorage.addNew(BookingMapper.toEntity(bookingDto));
+        Booking newBooking = bookingRepository.save(BookingMapper.toEntity(bookingDto));
 
         log.info("Вещь с id:" + bookingDto.getItem().getId() +
                 " забронирована пользователем " + bookingDto.getBooker().getId());
@@ -73,7 +69,7 @@ public class BookingService {
     }
 
     public Booking getBookingById(Long bookingId) throws RecordNotFoundException {
-        Booking booking = bookingStorage.getById(bookingId);
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
 
         if (booking == null) {
             throw new RecordNotFoundException("Бронирование с id " + bookingId + " не найдено");
@@ -110,12 +106,11 @@ public class BookingService {
                         throw new BookingValidationException("Бронирование уже отклонено");
                     }
 
-
                 }
 
             }
 
-            bookingStorage.save(booking);
+            bookingRepository.save(booking);
 
         } else {
             throw new RecordNotFoundException("Для подтвеждения данным пользователем с id " + id +
@@ -138,26 +133,31 @@ public class BookingService {
 
         switch (state) {
             case ALL: {
-                return !isOwner ? bookingStorage.getByBooker(userId) : bookingStorage.getByOwner(userId);
+                return !isOwner ? bookingRepository.findByBookerId(userId) :
+                        bookingRepository.findByItemOwnerId(userId);
             }
 
             case PAST: {
-                return !isOwner ? bookingStorage.getPastForBooker(userId) : bookingStorage.getPastForOwner(userId);
+                return !isOwner ? bookingRepository.findPastBookingsForBooker(userId) :
+                        bookingRepository.findPastBookingsForOwner(userId);
             }
 
             case FUTURE: {
-                return !isOwner ? bookingStorage.getFutureForBooker(userId) : bookingStorage.getFutureForOwner(userId);
+                return !isOwner ? bookingRepository.findFutureBookingsForBooker(userId) :
+                        bookingRepository.findFutureBookingsForOwner(userId);
             }
 
             case CURRENT: {
-                return !isOwner ? bookingStorage.getCurrentForBooker(userId) : bookingStorage.getCurrentForOwner(userId);
+                return !isOwner ? bookingRepository.findCurrentBookingsForBooker(userId) :
+                        bookingRepository.findCurrentBookingsForOwner(userId);
             }
             case WAITING: {
-                return !isOwner ? bookingStorage.getWaitingForBooker(userId) : bookingStorage.getWaitingForOwner(userId);
+                return !isOwner ? bookingRepository.findWaitingBookingsForBooker(userId) :
+                        bookingRepository.findWaitingBookingsForOwner(userId);
             }
             case REJECTED: {
-                return !isOwner ? bookingStorage.getRejectedForBooker(userId) :
-                        bookingStorage.getRejectedForOwner(userId);
+                return !isOwner ? bookingRepository.findRejectedBookingsForBooker(userId) :
+                        bookingRepository.findRejectedBookingsForOwner(userId);
             }
             default: {
                 return null;
@@ -166,15 +166,15 @@ public class BookingService {
     }
 
     public Booking getLastBookingForItem(Long itemId) {
-        return bookingStorage.getLastBookingForItem(itemId);
+        return bookingRepository.findLastBookingIdForItem(itemId);
     }
 
     public Booking getNextBookingForItem(Long itemId) {
-        return bookingStorage.getNextBookingForItem(itemId);
+        return bookingRepository.findNextBookingForItem(itemId);
     }
 
 
-    private void bookingDataValidations(BookingDto bookingDto, Long userId) {
+    private void validateBookingData(BookingDto bookingDto, Long userId) {
         if (bookingDto.getItemId() == null) {
             throw new BookingValidationException("ИД бронируемой вещи не может быть пустой");
 
