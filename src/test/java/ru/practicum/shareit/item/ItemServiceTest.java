@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
