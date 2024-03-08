@@ -150,8 +150,8 @@ class BookingServiceTest {
 
         testBookingDto8 = BookingDto.builder()
                 .itemId(testItem2.getId())
-                .start(LocalDateTime.now().plusDays(2))
-                .end(LocalDateTime.now().plusDays(2))
+                .start(LocalDateTime.parse("2034-03-08T17:13:37"))
+                .end(LocalDateTime.parse("2034-03-08T17:13:37"))
                 .build();
 
         testBooking = Booking.builder()
