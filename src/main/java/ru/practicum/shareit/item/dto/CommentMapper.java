@@ -2,13 +2,15 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Comment;
 
+import java.time.temporal.ChronoUnit;
+
 public class CommentMapper {
 
     public static Comment toEntity(CommentDto dto) {
         return Comment.builder()
                 .id(dto.getId())
                 .text(dto.getText())
-                .created(dto.getCreated())
+                .created(dto.getCreated() != null ? dto.getCreated().truncatedTo(ChronoUnit.MILLIS) : null)
                 .build();
     }
 
@@ -17,7 +19,7 @@ public class CommentMapper {
                 .id(comment.getId())
                 .text(comment.getText())
                 .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
+                .created(comment.getCreated() != null ? comment.getCreated().truncatedTo(ChronoUnit.MILLIS) : null)
                 .build();
     }
 
@@ -27,7 +29,7 @@ public class CommentMapper {
         }
 
         if (dto.getCreated() != null) {
-            comment.setCreated(dto.getCreated());
+            comment.setCreated(dto.getCreated().truncatedTo(ChronoUnit.MILLIS));
         }
 
     }

@@ -10,10 +10,5 @@ public class UserDto {
     private String email;
     private String name;
 
-    public UserDto(Long id, String email, String name) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-    }
 
 }

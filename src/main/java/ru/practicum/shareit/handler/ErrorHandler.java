@@ -50,6 +50,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleWrongRequestData(final RequestValidationException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleBookingControllerBadReques(final BookingControllerBadRequestException e) {
         log.error(String.format(e.getMessage()));
         return new ExceptionResponse(

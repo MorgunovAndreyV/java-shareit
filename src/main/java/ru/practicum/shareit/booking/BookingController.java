@@ -40,20 +40,24 @@ public class BookingController {
 
     @GetMapping
     public Set<BookingDto> getAllForUserByState(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @Nullable @RequestParam("state") String state) {
+                                                @Nullable @RequestParam("state") String state,
+                                                @Nullable @RequestParam(name = "from") Integer numberFrom,
+                                                @Nullable @RequestParam(name = "size") Integer size) {
         Boolean isOwner = false;
 
-        return bookingService.getBookingsFilteredByState(userId, isOwner, getState(state))
+        return bookingService.getBookingsFilteredByState(userId, isOwner, getState(state), numberFrom, size)
                 .stream().map(BookingMapper::toDto).sorted(BookingComparators.compareBookingDtoByStartDateDesc)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @GetMapping(path = "/owner")
     public Set<BookingDto> getAllForOwnerByState(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @Nullable @RequestParam("state") String state) {
+                                                 @Nullable @RequestParam("state") String state,
+                                                 @Nullable @RequestParam(name = "from") Integer numberFrom,
+                                                 @Nullable @RequestParam(name = "size") Integer size) {
         Boolean isOwner = true;
 
-        return bookingService.getBookingsFilteredByState(userId, isOwner, getState(state))
+        return bookingService.getBookingsFilteredByState(userId, isOwner, getState(state), numberFrom, size)
                 .stream().map(BookingMapper::toDto).sorted(BookingComparators.compareBookingDtoByStartDateDesc)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

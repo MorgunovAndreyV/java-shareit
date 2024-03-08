@@ -1,0 +1,112 @@
+package ru.practicum.shareit.item;
+
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.config.ContextConfig;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
+
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@SpringJUnitConfig({ContextConfig.class, CommentService.class})
+class CommentServiceIntTest {
+    private final CommentService commentService;
+    private final BookingService bookingService;
+    private final UserService userService;
+    private final ItemService itemService;
+
+    private static CommentDto testCommentDto1;
+
+    private static User testUserOwner;
+    private static User testUserBooker;
+
+    private static Item testItem;
+
+    private static BookingDto testBookingDto1;
+    private static Booking testBooking;
+
+    @BeforeAll
+    static void init() {
+        testCommentDto1 = CommentDto.builder()
+                .text("Comment text")
+                .build();
+
+        testItem = Item.builder()
+                .name("Test item")
+                .description("Just test item")
+                .available(true)
+                .build();
+
+        testUserBooker = User.builder()
+                .name("bookerUser")
+                .email("booker@user.com")
+                .build();
+
+        testUserOwner = User.builder()
+                .name("user_owner1")
+                .email("user_owner1@user.com")
+                .build();
+
+        testBookingDto1 = BookingDto.builder()
+                .build();
+
+        testBooking = Booking.builder()
+                .status(BookingStatus.WAITING)
+                .build();
+
+    }
+
+    @BeforeEach
+    void prepareData() {
+        if (testUserOwner.getId() == null) {
+            testUserOwner = userService.addNew(testUserOwner);
+        }
+
+        if (testUserBooker.getId() == null) {
+            testUserBooker = userService.addNew(testUserBooker);
+        }
+
+        if (testItem.getId() == null) {
+            testItem = itemService.addNew(testItem, testUserOwner.getId());
+        }
+
+    }
+
+    @Test
+    void testAddNewComment() {
+        if (testBooking.getId() == null) {
+            testBookingDto1.setItemId(testItem.getId());
+            testBookingDto1.setStart(LocalDateTime.now().plusSeconds(4));
+            testBookingDto1.setEnd(LocalDateTime.now().plusDays(2));
+            Long bookingId1 = bookingService.addNew(testBookingDto1, testUserBooker.getId()).getId();
+            testBooking = bookingService.getBookingById(bookingId1);
+        }
+        try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Comment newComment = commentService.addNew(testItem.getId(), testUserBooker.getId(), testCommentDto1);
+
+        Assertions.assertEquals(testCommentDto1.getText(), newComment.getText());
+        Assertions.assertNotEquals(newComment.getCreated(), null);
+        Assertions.assertNotEquals(newComment.getId(), null);
+        Assertions.assertEquals(newComment.getAuthor().getId(), testUserBooker.getId());
+        Assertions.assertEquals(newComment.getItem().getId(), testItem.getId());
+    }
+
+}

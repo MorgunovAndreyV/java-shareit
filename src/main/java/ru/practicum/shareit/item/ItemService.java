@@ -10,6 +10,7 @@ import ru.practicum.shareit.exception.UserValidationException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,10 @@ public class ItemService {
 
     public Item addNew(Item item, Long id) throws ItemStorageException {
         validateItemData(item);
-        userService.getUserById(id);
+        User user = userService.getUserById(id);
         itemAlreadyExists(item, itemRepository.findAll());
 
-        item.setOwner(userService.getUserById(id));
+        item.setOwner(user);
 
         Item newItem = itemRepository.save(item);
         log.info("Новая вещь добавлена успешно. id:" + item.getId());
@@ -71,6 +72,10 @@ public class ItemService {
         log.info("Запись вещи изменена успешно. id:" + item.getId());
 
         return changedItem;
+    }
+
+    public List<Item> getItemsByRequestId(Long requestId) {
+        return itemRepository.findByRequestId(requestId);
     }
 
     private void validateItemData(Item item) {
