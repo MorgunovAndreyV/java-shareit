@@ -287,6 +287,14 @@ class BookingServiceIntTest {
         List<Booking> foundBookings2 = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.REJECTED, null, null);
         Assertions.assertTrue(foundBookings2.contains(testBooking4));
+
+        List<Booking> foundBookingsOwner = bookingService
+                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, 0, 5);
+        Assertions.assertTrue(foundBookings.contains(testBooking4));
+
+        List<Booking> foundBookings2Owner = bookingService
+                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, null, null);
+        Assertions.assertTrue(foundBookings2.contains(testBooking4));
     }
 
     @Test

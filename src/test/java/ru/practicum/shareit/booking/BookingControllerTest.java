@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exception.BookingValidationException;
-import ru.practicum.shareit.handler.ErrorHandler;
+import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -40,11 +40,8 @@ class BookingControllerTest {
     @MockBean
     BookingService bookingService;
 
-    @MockBean
-    ErrorHandler errorHandler;
-
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     private static BookingDto testBookingDtoIn;
     private static User testUserOwner;
@@ -226,7 +223,7 @@ class BookingControllerTest {
         dto.setId(1L);
         Booking testBooking2 = BookingMapper.toEntity(dto);
 
-        when(bookingService.addNew(Mockito.any(), anyLong())).thenThrow(BookingValidationException.class);
+        when(bookingService.addNew(Mockito.any(), anyLong())).thenThrow(new BookingValidationException("test"));
 
         mvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -238,11 +235,21 @@ class BookingControllerTest {
     }
 
     @Test
-    void testGetAllForUsersByStateFailedByStateUnknown() throws Exception {
-        /*when(bookingService.getBookingsFilteredByState(Mockito.anyLong(), Mockito.anyBoolean(), Mockito.any(),
-                Mockito.any(), Mockito.any()))
-                .thenThrow(BookingControllerBadRequestException.class);*/
+    void testRecordNotFoundExceptionFailsController() throws Exception {
+        when(bookingService
+                .getBookingByIdFilteredByUser(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(new RecordNotFoundException("test"));
 
+        mvc.perform(get("/bookings/{id}", 1L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetAllForUsersByStateFailedByStateUnknown() throws Exception {
         mvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 1L)
                         .param("state", "TEST_TEST_TEST")

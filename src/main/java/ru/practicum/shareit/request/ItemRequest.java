@@ -38,8 +38,4 @@ public class ItemRequest {
                 && Objects.equals(description, request.description);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, created, description);
-    }
 }

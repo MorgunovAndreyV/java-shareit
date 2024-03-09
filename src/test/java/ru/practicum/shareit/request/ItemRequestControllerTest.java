@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.RequestValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +54,7 @@ class ItemRequestControllerTest {
     ObjectMapper mapper;
 
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -222,5 +224,20 @@ class ItemRequestControllerTest {
                         is(testItemRequestDto1.getId()), Long.class))
                 .andExpect(jsonPath("$.description",
                         is(testItemRequestDto1.getDescription())));
+    }
+
+    @Test
+    void testRequestValidationExceptionFailsController() throws Exception {
+        ItemRequestDto testItemRequestDto1 = ItemRequestMapper.toDto(testItemRequest1);
+
+        when(itemRequestService.addNew(Mockito.any(), anyLong())).thenThrow(new RequestValidationException("test"));
+
+        mvc.perform(post("/requests")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(testItemRequestDto1))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

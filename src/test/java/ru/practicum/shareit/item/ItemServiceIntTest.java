@@ -24,6 +24,8 @@ class ItemServiceIntTest {
     private static Item testItem;
     private static Item testItem2;
     private static Item testItem3;
+    private static Item testItem4;
+    private static Item testItem5;
 
     private static User testUserOwner;
 
@@ -50,6 +52,19 @@ class ItemServiceIntTest {
                 .name("Test item #3")
                 .description("Just test item #3")
                 .available(true)
+                .build();
+
+        testItem4 = Item.builder()
+                .name("Test item #4")
+                .description("Just test item #4")
+                .available(true)
+                .build();
+
+        testItem5 = Item.builder()
+                .name("Test item #5")
+                .description("Just test item #5")
+                .available(true)
+                .requestId(1L)
                 .build();
 
     }
@@ -125,8 +140,21 @@ class ItemServiceIntTest {
     }
 
     @Test
-    void testgetByOwner() {
+    void testGetByOwner() {
+        Item newItem = itemService.addNew(testItem4, testUserOwner.getId());
 
+        List<Item> itemsFromDb = itemService.getByOwner(testUserOwner.getId());
+
+        Assertions.assertTrue(itemsFromDb.contains(newItem));
+    }
+
+    @Test
+    void testGetByRequestId() {
+        Item newItem = itemService.addNew(testItem5, testUserOwner.getId());
+
+        List<Item> itemsFromDb = itemService.getItemsByRequestId(newItem.getRequestId());
+
+        Assertions.assertTrue(itemsFromDb.contains(newItem));
     }
 
 }

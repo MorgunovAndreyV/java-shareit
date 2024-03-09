@@ -26,6 +26,7 @@ class ItemRequestServiceIntTest {
     private static ItemRequest testItemRequest2;
     private static ItemRequest testItemRequest3;
     private static ItemRequest testItemRequest4;
+    private static ItemRequest testItemRequest5;
 
     @BeforeAll
     static void init() {
@@ -53,6 +54,10 @@ class ItemRequestServiceIntTest {
 
         testItemRequest4 = ItemRequest.builder()
                 .description("Test Description #4")
+                .build();
+
+        testItemRequest5 = ItemRequest.builder()
+                .description("Test Description #5")
                 .build();
     }
 
@@ -118,5 +123,22 @@ class ItemRequestServiceIntTest {
 
     }
 
+    @Test
+    void testGetRequestPaginated() {
+        ItemRequest itemRequest = itemRequestService.addNew(testItemRequest5, testUserBooker.getId());
+
+        List<ItemRequest> itemRequestList = itemRequestService.getAllPaginated(null, null);
+
+        Assertions.assertFalse(itemRequestList.isEmpty());
+        Assertions.assertTrue(itemRequestList.contains(itemRequest));
+
+        Integer itemRequestListSize = itemRequestList.size();
+
+        List<ItemRequest> itemRequestListPaginated = itemRequestService.getAllPaginated(0, itemRequestListSize);
+
+        Assertions.assertFalse(itemRequestListPaginated.isEmpty());
+        Assertions.assertTrue(itemRequestListPaginated.contains(itemRequest));
+
+    }
 
 }
