@@ -77,6 +77,10 @@ public class ItemService {
         return itemRepository.findByRequestId(requestId);
     }
 
+    public void deleteById(Long itemId) {
+        itemRepository.deleteById(itemId);
+    }
+
     private void validateItemData(Item item) {
         if (item.getName() == null || item.getName().isEmpty()) {
             throw new ItemValidationException("Имя не может быть пустым");
@@ -101,5 +105,6 @@ public class ItemService {
         }
 
     }
+
 
 }

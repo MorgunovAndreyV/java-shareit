@@ -202,16 +202,11 @@ class BookingServiceTest {
 
     @Test
     void testAddNew() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
-
-        Mockito
-                .when(bookingRepository.findAll())
+        Mockito.when(bookingRepository.findAll())
                 .thenReturn(new ArrayList<>());
 
         BookingService bookingService = new BookingService(bookingRepository, userService, itemService);
@@ -222,7 +217,6 @@ class BookingServiceTest {
 
     @Test
     void testAddNewFailedByEmptyItemId() {
-
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
             bookingService.addNew(testBookingDto2, testUserBooker.getId());
         });
@@ -233,12 +227,9 @@ class BookingServiceTest {
 
     @Test
     void testAddNewFailedByNotAvailable() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem2);
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -251,14 +242,10 @@ class BookingServiceTest {
 
     @Test
     void testAddNewEmptyStart() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
-
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
             bookingService.addNew(testBookingDto4, testUserBooker.getId());
         });
@@ -269,12 +256,9 @@ class BookingServiceTest {
 
     @Test
     void testAddNewEmptyEnd() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -287,12 +271,9 @@ class BookingServiceTest {
 
     @Test
     void testAddNewEndBeforeStart() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -305,12 +286,9 @@ class BookingServiceTest {
 
     @Test
     void testAddNewBookingPeriodInPast() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -323,12 +301,9 @@ class BookingServiceTest {
 
     @Test
     void testAddNewStartEqualsEnd() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -353,8 +328,7 @@ class BookingServiceTest {
 
     @Test
     void testGetBookingByIdFilteredByUserFailedBookingOwnerShip() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking));
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
@@ -368,8 +342,7 @@ class BookingServiceTest {
 
     @Test
     void testGetBookingByIdFilteredByUserFailedBookingNotFound() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(null));
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
@@ -388,12 +361,12 @@ class BookingServiceTest {
         });
 
         Assertions.assertEquals("Отсутствует id хозяина бронируемоей вещи", e.getMessage());
+
     }
 
     @Test
     void testChangeBookingApprovalSuccess() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking4));
 
         Assertions.assertEquals(BookingStatus.APPROVED,
@@ -403,8 +376,7 @@ class BookingServiceTest {
 
     @Test
     void testChangeBookingRejectionSuccess() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking5));
 
         Assertions.assertEquals(BookingStatus.REJECTED,
@@ -415,8 +387,7 @@ class BookingServiceTest {
 
     @Test
     void testChangeBookingApprovalFailedBookingAlreadyApproved() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking2));
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -429,8 +400,7 @@ class BookingServiceTest {
 
     @Test
     void testChangeBookingApprovalFailedBookingAlreadyRejected() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking3));
 
         Exception e = Assertions.assertThrows(BookingValidationException.class, () -> {
@@ -438,12 +408,12 @@ class BookingServiceTest {
         });
 
         Assertions.assertEquals("Бронирование уже отклонено", e.getMessage());
+
     }
 
     @Test
     void testChangeBookingApprovalFailedRecipientNotOwner() {
-        Mockito
-                .when(bookingRepository.findById(Mockito.anyLong()))
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(testBooking));
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
@@ -462,6 +432,7 @@ class BookingServiceTest {
         });
 
         Assertions.assertEquals("Отсутствует id автора брони вещи", e.getMessage());
+
     }
 
     @Test
@@ -471,6 +442,7 @@ class BookingServiceTest {
         });
 
         Assertions.assertEquals("Отсутствует id хозяина вещи", e.getMessage());
+
     }
 
     @Test
@@ -481,16 +453,14 @@ class BookingServiceTest {
         });
 
         Assertions.assertEquals("Некорректные параметры запроса с постраничным выводом", e.getMessage());
+
     }
 
     @Test
     void testAddNewBookingFailedByOwnerBookingHisItem() {
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserOwner);
-
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
@@ -499,6 +469,7 @@ class BookingServiceTest {
 
         Assertions.assertEquals("Для пользователя с id " + testUserOwner.getId() + " не найдено доступной" +
                 "для бронирования вещи с id " + testBookingDto1.getItemId(), e.getMessage());
+
     }
 
 }

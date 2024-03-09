@@ -1,6 +1,9 @@
 package ru.practicum.shareit.booking;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -42,15 +45,9 @@ public class BookingRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
 
-    @BeforeAll
-    static void init() {
-
-
-    }
 
     @BeforeEach
     void createData() {
-
         testUserOwner = User.builder()
                 .name("user_owner1")
                 .email("user_owner1@user.com")
@@ -146,6 +143,7 @@ public class BookingRepositoryTest {
         testBooking3 = bookingRepository.save(testBooking3);
         testBooking4 = bookingRepository.save(testBooking4);
         testBooking5 = bookingRepository.save(testBooking5);
+
     }
 
     @AfterEach
@@ -175,93 +173,117 @@ public class BookingRepositoryTest {
         Assertions.assertTrue(bookingList.contains(testBooking2));
         Assertions.assertTrue(bookingList.contains(testBooking3));
         Assertions.assertTrue(bookingList.contains(testBooking4));
-        System.out.println(bookingList);
 
     }
 
     @Test
     void testFindByItemOwnerId() {
         List<Booking> bookingList = bookingRepository.findByItemOwnerId(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking));
         Assertions.assertTrue(bookingList.contains(testBooking2));
         Assertions.assertTrue(bookingList.contains(testBooking3));
         Assertions.assertFalse(bookingList.contains(testBooking4));
-        System.out.println(bookingList);
+
     }
 
     @Test
     void testFindPastBookingsForBooker() {
         List<Booking> bookingList = bookingRepository.findPastBookingsForBooker(testUserBooker.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking3));
+
     }
 
     @Test
     void testFindPastBookingsForOwner() {
         List<Booking> bookingList = bookingRepository.findPastBookingsForOwner(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking3));
         Assertions.assertEquals(1, bookingList.size());
+
     }
 
     @Test
     void testFindCurrentBookingsForBooker() {
         List<Booking> bookingList = bookingRepository.findCurrentBookingsForBooker(testUserBooker.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking2));
+
     }
 
     @Test
     void testFindCurrentBookingsForOwner() {
         List<Booking> bookingList = bookingRepository.findCurrentBookingsForOwner(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking2));
+
     }
 
     @Test
     void testFindFutureBookingsForBooker() {
         List<Booking> bookingList = bookingRepository.findFutureBookingsForBooker(testUserBooker.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking));
         Assertions.assertTrue(bookingList.contains(testBooking4));
+
     }
 
     @Test
     void testFindFutureBookingsForOwner() {
         List<Booking> bookingList = bookingRepository.findFutureBookingsForOwner(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking5));
+
     }
 
     @Test
     void testFindWaitingBookingsForBooker() {
         List<Booking> bookingList = bookingRepository.findWaitingBookingsForBooker(testUserBooker.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking));
         Assertions.assertTrue(bookingList.contains(testBooking4));
+
     }
 
     @Test
     void testFindWaitingBookingsForOwner() {
         List<Booking> bookingList = bookingRepository.findFutureBookingsForOwner(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking));
         Assertions.assertTrue(bookingList.contains(testBooking5));
+
     }
 
     @Test
     void testFindRejectedBookingsForBooker() {
         List<Booking> bookingList = bookingRepository.findRejectedBookingsForBooker(testUserBooker.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking3));
+
     }
 
     @Test
     void testFindRejectedBookingsForOwner() {
         List<Booking> bookingList = bookingRepository.findRejectedBookingsForOwner(testUserOwner.getId());
+
         Assertions.assertTrue(bookingList.contains(testBooking3));
+
     }
 
     @Test
     void findLastBookingIdForItem() {
         Booking bookingFound = bookingRepository.findLastBookingIdForItem(testItem.getId());
+
         Assertions.assertTrue(testBooking2.equals(bookingFound));
+
     }
 
     @Test
     void findNextBookingForItem() {
         Booking bookingFound = bookingRepository.findNextBookingForItem(testItem.getId());
+
         Assertions.assertTrue(testBooking.equals(bookingFound));
+
     }
 }

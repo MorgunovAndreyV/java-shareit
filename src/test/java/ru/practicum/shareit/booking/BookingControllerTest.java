@@ -34,19 +34,19 @@ import static ru.practicum.shareit.booking.BookingStatus.WAITING;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
-    @Autowired
-    ObjectMapper mapper;
-
-    @MockBean
-    BookingService bookingService;
-
-    @Autowired
-    MockMvc mvc;
-
     private static BookingDto testBookingDtoIn;
     private static User testUserOwner;
     private static User testUserBooker;
     private static Item testItem;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @MockBean
+    private BookingService bookingService;
+
+    @Autowired
+    private MockMvc mvc;
 
     @BeforeAll
     static void init() {

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.config.ContextConfig;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -20,13 +20,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@SpringJUnitConfig({ContextConfig.class, BookingService.class})
 class BookingServiceIntTest {
-    private final BookingService bookingService;
-    private final UserService userService;
-    private final ItemService itemService;
-
     private static Item testItem;
     private static Item testItem2;
     private static Item testItem3;
@@ -45,6 +42,10 @@ class BookingServiceIntTest {
     private static Booking testBooking2;
     private static Booking testBooking3;
     private static Booking testBooking4;
+
+    private final UserService userService;
+    private final BookingService bookingService;
+    private final ItemService itemService;
 
     @BeforeAll
     static void init() {
@@ -195,116 +196,137 @@ class BookingServiceIntTest {
     }
 
     @Test
-    void testGetBookingsFilteredByStateFUTURE() {
-        List<Booking> foundBookingsBooker = bookingService
+    void testGetBookingsFilteredByStateFUTUREForBooker() {
+        List<Booking> foundBookingsBookerPaged = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.FUTURE, 0, 5);
-        Assertions.assertTrue(foundBookingsBooker.contains(testBooking));
-
-        List<Booking> foundBookingsOwner = bookingService
-                .getBookingsFilteredByState(testUserOwner.getId(), true, State.FUTURE, 0, 5);
-        Assertions.assertTrue(foundBookingsOwner.contains(testBooking));
-
-        List<Booking> foundBookingsBookerNoPages = bookingService
+        List<Booking> foundBookingsBookerUnPaged = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.FUTURE, null, null);
-        Assertions.assertTrue(foundBookingsBookerNoPages.contains(testBooking));
 
-        List<Booking> foundBookingsOwnerNoPages = bookingService
+        Assertions.assertTrue(foundBookingsBookerPaged.contains(testBooking));
+        Assertions.assertTrue(foundBookingsBookerUnPaged.contains(testBooking));
+
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateFUTUREForOwner() {
+        List<Booking> foundBookingsOwnerPaged = bookingService
+                .getBookingsFilteredByState(testUserOwner.getId(), true, State.FUTURE, 0, 5);
+        List<Booking> foundBookingsOwnerUnPages = bookingService
                 .getBookingsFilteredByState(testUserOwner.getId(), true, State.FUTURE, null, null);
-        Assertions.assertTrue(foundBookingsOwnerNoPages.contains(testBooking));
+
+        Assertions.assertTrue(foundBookingsOwnerPaged.contains(testBooking));
+        Assertions.assertTrue(foundBookingsOwnerUnPages.contains(testBooking));
+
     }
 
     @Test
-    void testGetBookingsFilteredByStatePAST() {
-        List<Booking> foundBookingsBooker = bookingService
+    void testGetBookingsFilteredByStatePASTForBooker() {
+        List<Booking> foundBookingsBookerPaged = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.PAST, 0, 5);
-        Assertions.assertTrue(foundBookingsBooker.contains(testBooking2));
-
-        List<Booking> foundBookingsOwner = bookingService
-                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.PAST, 0, 5);
-        Assertions.assertTrue(foundBookingsOwner.contains(testBooking2));
-
-        List<Booking> foundBookingsBookerNoPages = bookingService
+        List<Booking> foundBookingsBookerUnPaged = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.PAST, null, null);
-        Assertions.assertTrue(foundBookingsBookerNoPages.contains(testBooking2));
 
-        List<Booking> foundBookingsOwnerNoPages = bookingService
-                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.PAST, null, null);
-        Assertions.assertTrue(foundBookingsOwnerNoPages.contains(testBooking2));
+        Assertions.assertTrue(foundBookingsBookerPaged.contains(testBooking2));
+        Assertions.assertTrue(foundBookingsBookerUnPaged.contains(testBooking2));
+
     }
 
     @Test
-    void testGetBookingsFilteredByStateWAITING() {
-        List<Booking> foundBookingsBooker = bookingService
-                .getBookingsFilteredByState(testUserBooker.getId(), false, State.WAITING, 0, 5);
-        Assertions.assertTrue(foundBookingsBooker.contains(testBooking));
+    void testGetBookingsFilteredByStatePASTForOwner() {
+        List<Booking> foundBookingsOwnerPaged = bookingService
+                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.PAST, 0, 5);
+        List<Booking> foundBookingsOwnerUnPaged = bookingService
+                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.PAST, null, null);
 
+        Assertions.assertTrue(foundBookingsOwnerPaged.contains(testBooking2));
+        Assertions.assertTrue(foundBookingsOwnerUnPaged.contains(testBooking2));
+
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateWAITINGForBooker() {
+        List<Booking> foundBookingsBookerPaged = bookingService
+                .getBookingsFilteredByState(testUserBooker.getId(), false, State.WAITING, 0, 5);
+        List<Booking> foundBookingsBookerUnPaged = bookingService
+                .getBookingsFilteredByState(testUserBooker.getId(), false, State.WAITING, null, null);
+
+        Assertions.assertTrue(foundBookingsBookerPaged.contains(testBooking));
+        Assertions.assertTrue(foundBookingsBookerUnPaged.contains(testBooking));
+
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateWAITINGForOwner() {
         List<Booking> foundBookingsOwner = bookingService
                 .getBookingsFilteredByState(testUserOwner.getId(), true, State.WAITING, 0, 5);
-        Assertions.assertTrue(foundBookingsOwner.contains(testBooking));
-
         List<Booking> foundBookingsOwner2 = bookingService
                 .getBookingsFilteredByState(testUserOwner2.getId(), true, State.WAITING, 0, 5);
-        Assertions.assertTrue(foundBookingsOwner2.contains(testBooking2));
-
-        List<Booking> foundBookingsBookerNoPages = bookingService
-                .getBookingsFilteredByState(testUserBooker.getId(), false, State.WAITING, null, null);
-        Assertions.assertTrue(foundBookingsBookerNoPages.contains(testBooking));
-
         List<Booking> foundBookingsOwnerNoPages = bookingService
                 .getBookingsFilteredByState(testUserOwner.getId(), true, State.WAITING, null, null);
-        Assertions.assertTrue(foundBookingsOwnerNoPages.contains(testBooking));
-
         List<Booking> foundBookingsOwner2NoPages = bookingService
                 .getBookingsFilteredByState(testUserOwner2.getId(), true, State.WAITING, null, null);
+
+        Assertions.assertTrue(foundBookingsOwner.contains(testBooking));
+        Assertions.assertTrue(foundBookingsOwner2.contains(testBooking2));
+        Assertions.assertTrue(foundBookingsOwnerNoPages.contains(testBooking));
         Assertions.assertTrue(foundBookingsOwner2NoPages.contains(testBooking2));
+
     }
 
     @Test
-    void testGetBookingsFilteredByStateCURRENT() {
+    void testGetBookingsFilteredByStateCURRENTForBooker() {
         List<Booking> foundBookings = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.CURRENT, 0, 5);
-        Assertions.assertTrue(foundBookings.contains(testBooking3));
-
-        List<Booking> foundBookingsOwner = bookingService
-                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.CURRENT, 0, 5);
-        Assertions.assertTrue(foundBookingsOwner.contains(testBooking3));
-
         List<Booking> foundBookingsNoPages = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.CURRENT, null, null);
+
+        Assertions.assertTrue(foundBookings.contains(testBooking3));
         Assertions.assertTrue(foundBookingsNoPages.contains(testBooking3));
 
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateCURRENTForOwner() {
+        List<Booking> foundBookingsOwner = bookingService
+                .getBookingsFilteredByState(testUserOwner2.getId(), true, State.CURRENT, 0, 5);
         List<Booking> foundBookingsOwnerNoPages = bookingService
                 .getBookingsFilteredByState(testUserOwner2.getId(), true, State.CURRENT, null, null);
+
+        Assertions.assertTrue(foundBookingsOwner.contains(testBooking3));
         Assertions.assertTrue(foundBookingsOwnerNoPages.contains(testBooking3));
+
     }
 
     @Test
-    void testGetBookingsFilteredByStateREJECTED() {
+    void testGetBookingsFilteredByStateREJECTEDForBooker() {
         List<Booking> foundBookings = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.REJECTED, 0, 5);
-        Assertions.assertTrue(foundBookings.contains(testBooking4));
-
-        List<Booking> foundBookings2 = bookingService
+        List<Booking> foundBookingsPaged = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.REJECTED, null, null);
-        Assertions.assertTrue(foundBookings2.contains(testBooking4));
 
-        List<Booking> foundBookingsOwner = bookingService
-                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, 0, 5);
         Assertions.assertTrue(foundBookings.contains(testBooking4));
+        Assertions.assertTrue(foundBookingsPaged.contains(testBooking4));
 
-        List<Booking> foundBookings2Owner = bookingService
-                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, null, null);
-        Assertions.assertTrue(foundBookings2.contains(testBooking4));
     }
 
     @Test
-    void testGetBookingsFilteredByStateALL() {
+    void testGetBookingsFilteredByStateREJECTEDForOwner() {
+        List<Booking> foundBookingsOwner = bookingService
+                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, 0, 5);
+        List<Booking> foundBookingsOwnerPaged = bookingService
+                .getBookingsFilteredByState(testUserOwner.getId(), true, State.REJECTED, null, null);
+
+        Assertions.assertTrue(foundBookingsOwner.contains(testBooking4));
+        Assertions.assertTrue(foundBookingsOwnerPaged.contains(testBooking4));
+
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateALLForBooker() {
         List<Booking> foundBookings = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.ALL, 0, 5);
-
         List<Booking> foundBookingsNoPage = bookingService
                 .getBookingsFilteredByState(testUserBooker.getId(), false, State.ALL, null, null);
-
 
         Assertions.assertTrue(foundBookings.contains(testBooking4));
         Assertions.assertTrue(foundBookings.contains(testBooking3));
@@ -316,6 +338,10 @@ class BookingServiceIntTest {
         Assertions.assertTrue(foundBookingsNoPage.contains(testBooking2));
         Assertions.assertTrue(foundBookingsNoPage.contains(testBooking));
 
+    }
+
+    @Test
+    void testGetBookingsFilteredByStateALLForOwner() {
         List<Booking> foundBookingsOwner = bookingService
                 .getBookingsFilteredByState(testUserOwner.getId(), true, State.ALL, 0, 5);
 
@@ -332,6 +358,7 @@ class BookingServiceIntTest {
         Assertions.assertFalse(foundBookingsOwnerNoPage.contains(testBooking3));
         Assertions.assertFalse(foundBookingsOwnerNoPage.contains(testBooking2));
         Assertions.assertTrue(foundBookingsOwnerNoPage.contains(testBooking));
+
     }
 
     @Test
@@ -349,7 +376,6 @@ class BookingServiceIntTest {
 
     @Test
     void testGetNextBookingForItemDto() {
-
         ItemDto itemDto = ItemMapper.toDto(testItem);
         bookingService.setNextBooking(itemDto);
 

@@ -6,19 +6,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.practicum.shareit.config.ContextConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@SpringJUnitConfig({ContextConfig.class, ItemRequestService.class})
 class ItemRequestServiceIntTest {
-    private final ItemRequestService itemRequestService;
-    private final UserService userService;
-
     private static User testUserBooker;
     private static User testUserBooker2;
 
@@ -27,6 +25,10 @@ class ItemRequestServiceIntTest {
     private static ItemRequest testItemRequest3;
     private static ItemRequest testItemRequest4;
     private static ItemRequest testItemRequest5;
+
+    private final ItemRequestService itemRequestService;
+    private final UserService userService;
+
 
     @BeforeAll
     static void init() {
@@ -88,6 +90,7 @@ class ItemRequestServiceIntTest {
         ItemRequest request1 = itemRequestService.addNew(testItemRequest2, testUserBooker2.getId());
         ItemRequest request2 = itemRequestService.addNew(testItemRequest3, testUserBooker2.getId());
         ItemRequest request3 = itemRequestService.addNew(testItemRequest4, testUserBooker2.getId());
+        List<ItemRequest> requestsByAuthor = itemRequestService.getByAuthor(testUserBooker2.getId());
 
         Assertions.assertEquals(request1.getAuthorId(), testUserBooker2.getId());
         Assertions.assertEquals(request1.getDescription(), testItemRequest2.getDescription());
@@ -100,8 +103,6 @@ class ItemRequestServiceIntTest {
         Assertions.assertEquals(request3.getAuthorId(), testUserBooker2.getId());
         Assertions.assertEquals(request3.getDescription(), testItemRequest4.getDescription());
         Assertions.assertNotEquals(request3.getCreated(), null);
-
-        List<ItemRequest> requestsByAuthor = itemRequestService.getByAuthor(testUserBooker2.getId());
 
         Assertions.assertTrue(requestsByAuthor.contains(request1));
         Assertions.assertTrue(requestsByAuthor.contains(request2));
@@ -126,15 +127,12 @@ class ItemRequestServiceIntTest {
     @Test
     void testGetRequestPaginated() {
         ItemRequest itemRequest = itemRequestService.addNew(testItemRequest5, testUserBooker.getId());
-
         List<ItemRequest> itemRequestList = itemRequestService.getAllPaginated(null, null);
+        Integer itemRequestListSize = itemRequestList.size();
+        List<ItemRequest> itemRequestListPaginated = itemRequestService.getAllPaginated(0, itemRequestListSize);
 
         Assertions.assertFalse(itemRequestList.isEmpty());
         Assertions.assertTrue(itemRequestList.contains(itemRequest));
-
-        Integer itemRequestListSize = itemRequestList.size();
-
-        List<ItemRequest> itemRequestListPaginated = itemRequestService.getAllPaginated(0, itemRequestListSize);
 
         Assertions.assertFalse(itemRequestListPaginated.isEmpty());
         Assertions.assertTrue(itemRequestListPaginated.contains(itemRequest));

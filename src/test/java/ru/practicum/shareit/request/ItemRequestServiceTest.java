@@ -58,12 +58,12 @@ class ItemRequestServiceTest {
         });
 
         Assertions.assertEquals("Некорректные параметры запроса с постраничным выводом", e.getMessage());
+
     }
 
     @Test
     void testGetItemRequestByIdFailedWithRequestIdNotExisting() {
-        Mockito
-                .when(itemRequestRepository.findById(Mockito.anyLong()))
+        Mockito.when(itemRequestRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
         Long requestId = 888L;
@@ -72,6 +72,7 @@ class ItemRequestServiceTest {
         });
 
         Assertions.assertEquals("Заявка с id " + requestId + " не найдена", e.getMessage());
+
     }
 
 }

@@ -33,13 +33,13 @@ class UserControllerTest {
     private static User testUser2;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -106,6 +106,7 @@ class UserControllerTest {
                         is(userDto1.getName())))
                 .andExpect(jsonPath("$.email",
                         is(userDto1.getEmail())));
+
     }
 
     @Test
@@ -151,6 +152,7 @@ class UserControllerTest {
                         is(userDto1.getName())))
                 .andExpect(jsonPath("$.email",
                         is(userDto1.getEmail())));
+
     }
 
     @Test
@@ -179,5 +181,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
+
 }

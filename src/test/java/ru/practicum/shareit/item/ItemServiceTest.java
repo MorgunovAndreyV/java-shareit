@@ -70,9 +70,9 @@ class ItemServiceTest {
                 .owner(testUserOwner)
                 .build();
 
-
         itemRepository = Mockito.mock(ItemRepository.class);
         userService = Mockito.mock(UserService.class);
+
         itemService = new ItemService(itemRepository, userService);
 
     }
@@ -107,8 +107,7 @@ class ItemServiceTest {
 
     @Test
     void testGetItemByIdFailedByIdNotFound() {
-        Mockito
-                .when(itemRepository.findById(Mockito.anyLong()))
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
         Long itemId = 888L;
@@ -122,12 +121,9 @@ class ItemServiceTest {
 
     @Test
     void testChangeFailedByOtherOwnerId() {
-        Mockito
-                .when(itemRepository.findById(Mockito.anyLong()))
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(testItem));
-
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserOwner2);
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
@@ -137,4 +133,5 @@ class ItemServiceTest {
         Assertions.assertEquals("Вещи для указанного владельца не существует", e.getMessage());
 
     }
+
 }

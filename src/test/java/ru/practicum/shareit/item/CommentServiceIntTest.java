@@ -6,12 +6,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.config.ContextConfig;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -21,14 +21,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@SpringJUnitConfig({ContextConfig.class, CommentService.class})
 class CommentServiceIntTest {
-    private final CommentService commentService;
-    private final BookingService bookingService;
-    private final UserService userService;
-    private final ItemService itemService;
-
     private static CommentDto testCommentDto1;
 
     private static User testUserOwner;
@@ -38,6 +34,11 @@ class CommentServiceIntTest {
 
     private static BookingDto testBookingDto1;
     private static Booking testBooking;
+
+    private final CommentService commentService;
+    private final BookingService bookingService;
+    private final UserService userService;
+    private final ItemService itemService;
 
     @BeforeAll
     static void init() {
@@ -95,11 +96,13 @@ class CommentServiceIntTest {
             Long bookingId1 = bookingService.addNew(testBookingDto1, testUserBooker.getId()).getId();
             testBooking = bookingService.getBookingById(bookingId1);
         }
+
         try {
             TimeUnit.SECONDS.sleep(4);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+
         }
 
         Comment newComment = commentService.addNew(testItem.getId(), testUserBooker.getId(), testCommentDto1);
@@ -109,6 +112,7 @@ class CommentServiceIntTest {
         Assertions.assertNotEquals(newComment.getId(), null);
         Assertions.assertEquals(newComment.getAuthor().getId(), testUserBooker.getId());
         Assertions.assertEquals(newComment.getItem().getId(), testItem.getId());
+
     }
 
 }

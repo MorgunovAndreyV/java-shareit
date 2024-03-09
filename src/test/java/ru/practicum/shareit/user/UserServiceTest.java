@@ -74,8 +74,7 @@ class UserServiceTest {
 
     @Test
     void testGetUserByIdFailedWithUserNotExists() {
-        Mockito
-                .when(userRepository.findById(Mockito.anyLong()))
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
         Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {

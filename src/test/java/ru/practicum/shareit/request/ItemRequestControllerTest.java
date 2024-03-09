@@ -42,19 +42,19 @@ class ItemRequestControllerTest {
     private static ItemRequest testItemRequest2;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -110,10 +110,8 @@ class ItemRequestControllerTest {
 
         when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUser1);
-
         when(itemRequestService.getItemRequestById(Mockito.notNull()
         )).thenReturn(testItemRequest1);
-
         when(itemService.getItemsByRequestId(Mockito.anyLong()))
                 .thenReturn(returnItemList);
 
@@ -134,16 +132,17 @@ class ItemRequestControllerTest {
     @Test
     void testGetByAuthor() throws Exception {
         List<ItemRequest> returnItemRequestList = new ArrayList<>();
+
         returnItemRequestList.add(testItemRequest1);
         returnItemRequestList.add(testItemRequest2);
 
         List<Item> returnItemList = new ArrayList<>();
+
         returnItemList.add(testItem1);
         returnItemList.add(testItem2);
 
         when(itemRequestService.getByAuthor(Mockito.anyLong()))
                 .thenReturn(returnItemRequestList);
-
         when(itemService.getItemsByRequestId(Mockito.notNull()
         )).thenReturn(returnItemList);
 
@@ -170,19 +169,19 @@ class ItemRequestControllerTest {
     @Test
     void testGetAllPaginated() throws Exception {
         List<ItemRequest> returnItemRequestList = new ArrayList<>();
+
         returnItemRequestList.add(testItemRequest1);
         returnItemRequestList.add(testItemRequest2);
 
         List<Item> returnItemList = new ArrayList<>();
+
         returnItemList.add(testItem1);
         returnItemList.add(testItem2);
 
         when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUser1);
-
         when(itemService.getItemsByRequestId(Mockito.notNull()
         )).thenReturn(returnItemList);
-
         when(itemRequestService.getAllPaginated(Mockito.any(), Mockito.any()))
                 .thenReturn(returnItemRequestList);
 
@@ -224,6 +223,7 @@ class ItemRequestControllerTest {
                         is(testItemRequestDto1.getId()), Long.class))
                 .andExpect(jsonPath("$.description",
                         is(testItemRequestDto1.getDescription())));
+
     }
 
     @Test
@@ -239,5 +239,7 @@ class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
+
 }

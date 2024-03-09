@@ -95,12 +95,9 @@ class CommentServiceTest {
 
     @Test
     void testAddNewFailedByEmptyCommentText() {
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
-
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
 
         Exception e = Assertions.assertThrows(CommentValidationException.class, () -> {
@@ -113,16 +110,11 @@ class CommentServiceTest {
 
     @Test
     void testAddNewFailedByUserNotBooker() {
-        Mockito
-                .when(itemService.getItemById(Mockito.anyLong()))
+        Mockito.when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem);
-
-        Mockito
-                .when(userService.getUserById(Mockito.anyLong()))
+        Mockito.when(userService.getUserById(Mockito.anyLong()))
                 .thenReturn(testUserBooker);
-
-        Mockito
-                .when(bookingService.getByBooker(Mockito.anyLong()))
+        Mockito.when(bookingService.getByBooker(Mockito.anyLong()))
                 .thenReturn(new ArrayList<>());
 
         Exception e = Assertions.assertThrows(CommentValidationException.class, () -> {
@@ -134,6 +126,5 @@ class CommentServiceTest {
                 testUserBooker.getId() + " вещи " + testItem.getId(), e.getMessage());
 
     }
-
 
 }

@@ -42,19 +42,19 @@ class ItemControllerTest {
     private static User testUser1;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
 
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
 
     @MockBean
-    CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -98,19 +98,19 @@ class ItemControllerTest {
     @Test
     void testGetByOwner() throws Exception {
         List<Item> returnItemList = new ArrayList<>();
+
         returnItemList.add(testItem1);
         returnItemList.add(testItem2);
 
         ItemDto testItem1Dto = ItemMapper.toDto(testItem1);
         ItemDto testItem2Dto = ItemMapper.toDto(testItem2);
-
         List<Comment> returnCommentList = new ArrayList<>();
+
         returnCommentList.add(testComment1);
         returnCommentList.add(testComment2);
 
         when(commentService.getByItemId(Mockito.notNull()
         )).thenReturn(returnCommentList);
-
         when(itemService.getByOwner(Mockito.anyLong()))
                 .thenReturn(returnItemList);
 
@@ -129,6 +129,7 @@ class ItemControllerTest {
     @Test
     void testGetById() throws Exception {
         List<Comment> returnCommentList = new ArrayList<>();
+
         returnCommentList.add(testComment1);
         returnCommentList.add(testComment2);
 
@@ -136,7 +137,6 @@ class ItemControllerTest {
 
         when(commentService.getByItemId(Mockito.notNull()
         )).thenReturn(returnCommentList);
-
         when(itemService.getItemById(Mockito.anyLong()))
                 .thenReturn(testItem1);
 
@@ -153,6 +153,7 @@ class ItemControllerTest {
     @Test
     void testSearchByText() throws Exception {
         List<Item> returnItemList = new ArrayList<>();
+
         returnItemList.add(testItem1);
         returnItemList.add(testItem2);
 
@@ -196,6 +197,7 @@ class ItemControllerTest {
                         is(testComment1.getId()), Long.class))
                 .andExpect(jsonPath("$.text",
                         is(testComment1.getText())));
+
     }
 
     @Test
@@ -224,7 +226,6 @@ class ItemControllerTest {
         when(itemService.change(Mockito.any(), Mockito.anyLong()))
                 .thenReturn(testItem2);
 
-
         mvc.perform(patch("/items/{id}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .content(mapper.writeValueAsString(testItem2Dto))
@@ -249,6 +250,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
 
     @Test
@@ -264,5 +266,6 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
 }
