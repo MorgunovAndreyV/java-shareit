@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringJUnitConfig({ContextConfig.class, ItemService.class})
 class ItemServiceIntTest {
@@ -21,6 +23,7 @@ class ItemServiceIntTest {
 
     private static Item testItem;
     private static Item testItem2;
+    private static Item testItem3;
 
     private static User testUserOwner;
 
@@ -40,6 +43,12 @@ class ItemServiceIntTest {
         testItem2 = Item.builder()
                 .name("Test item #2")
                 .description("Just test item #2")
+                .available(true)
+                .build();
+
+        testItem3 = Item.builder()
+                .name("Test item #3")
+                .description("Just test item #3")
                 .available(true)
                 .build();
 
@@ -95,6 +104,28 @@ class ItemServiceIntTest {
         Assertions.assertEquals(itemFromDb.getOwner(), newItem.getOwner());
         Assertions.assertEquals(itemFromDb.getAvailable(), newItem.getAvailable());
         Assertions.assertEquals(itemFromDb.getId(), newItem.getId());
+
+    }
+
+    @Test
+    void testgetAvailableItemsByTextEmptyRequestedText() {
+        List<Item> foundItems = itemService.getAvailableItemsByText("");
+
+        Assertions.assertTrue(foundItems.isEmpty());
+
+    }
+
+    @Test
+    void testgetAvailableItemsByText() {
+        Item newItem = itemService.addNew(testItem3, testUserOwner.getId());
+
+        List<Item> foundItemFromDb = itemService.getAvailableItemsByText("#3");
+
+        Assertions.assertTrue(foundItemFromDb.contains(newItem));
+    }
+
+    @Test
+    void testgetByOwner() {
 
     }
 

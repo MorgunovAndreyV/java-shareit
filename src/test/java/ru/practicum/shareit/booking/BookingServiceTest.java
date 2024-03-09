@@ -483,4 +483,22 @@ class BookingServiceTest {
         Assertions.assertEquals("Некорректные параметры запроса с постраничным выводом", e.getMessage());
     }
 
+    @Test
+    void testAddNewBookingFailedByOwnerBookingHisItem() {
+        Mockito
+                .when(userService.getUserById(Mockito.anyLong()))
+                .thenReturn(testUserOwner);
+
+        Mockito
+                .when(itemService.getItemById(Mockito.anyLong()))
+                .thenReturn(testItem);
+
+        Exception e = Assertions.assertThrows(RecordNotFoundException.class, () -> {
+            bookingService.addNew(testBookingDto1, testUserOwner.getId());
+        });
+
+        Assertions.assertEquals("Для пользователя с id " + testUserOwner.getId() + " не найдено доступной" +
+                "для бронирования вещи с id " + testBookingDto1.getItemId(), e.getMessage());
+    }
+
 }

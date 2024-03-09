@@ -87,12 +87,32 @@ class UserServiceIntTest {
     @Test
     void testGetAllUsers() {
         User newUser1 = userService.addNew(testUserBooker2);
-        User newUser2 = userService.addNew(testUserBooker2);
+        User newUser2 = userService.addNew(testUserBooker3);
 
         Set<User> userList = userService.getAll();
 
         Assertions.assertTrue(userList.contains(newUser1));
         Assertions.assertTrue(userList.contains(newUser2));
+    }
+
+    @Test
+    void testDeleteUser() {
+        User newUser1 = userService.addNew(testUserBooker2);
+        User newUser2 = userService.addNew(testUserBooker3);
+
+        Set<User> userList = userService.getAll();
+
+        Assertions.assertTrue(userList.contains(newUser1));
+        Assertions.assertTrue(userList.contains(newUser2));
+
+        userService.delete(newUser1.getId());
+        userService.delete(newUser2.getId());
+
+        userList = userService.getAll();
+
+        Assertions.assertFalse(userList.contains(newUser1));
+        Assertions.assertFalse(userList.contains(newUser2));
+
     }
 
 }

@@ -9,9 +9,7 @@ import ru.practicum.shareit.exception.RequestValidationException;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,10 +18,6 @@ import java.util.stream.Collectors;
 public class ItemRequestService {
     private final UserService userService;
     private final ItemRequestRepository itemRequestRepository;
-
-    public Set<ItemRequest> getAll() {
-        return new HashSet<>(itemRequestRepository.findAll());
-    }
 
     public List<ItemRequest> getAllPaginated(Integer numberFrom, Integer pageSize) {
         if (pageSize == null && numberFrom == null) {
@@ -56,14 +50,6 @@ public class ItemRequestService {
         }
 
         return request;
-    }
-
-
-    public void delete(Long id) throws RecordNotFoundException {
-        getItemRequestById(id);
-
-        itemRequestRepository.deleteById(id);
-
     }
 
     public List<ItemRequest> getByAuthor(Long id) {

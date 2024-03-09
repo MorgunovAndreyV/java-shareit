@@ -104,4 +104,19 @@ class ItemRequestServiceIntTest {
 
     }
 
+    @Test
+    void testGetById() {
+        ItemRequest request1 = testItemRequest2;
+
+        if (testItemRequest2.getId() == null) {
+            request1 = itemRequestService.addNew(testItemRequest2, testUserBooker2.getId());
+        }
+
+        ItemRequest requestFromDb = itemRequestService.getItemRequestById(request1.getId());
+
+        Assertions.assertEquals(request1, requestFromDb);
+
+    }
+
+
 }
