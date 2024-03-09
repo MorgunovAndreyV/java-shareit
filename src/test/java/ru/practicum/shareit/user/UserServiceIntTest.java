@@ -9,6 +9,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.ContextConfig;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+import java.util.Set;
+
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringJUnitConfig({ContextConfig.class, UserService.class})
 class UserServiceIntTest {
@@ -17,6 +20,8 @@ class UserServiceIntTest {
 
     private static User testUserOwner;
     private static User testUserBooker;
+    private static User testUserBooker2;
+    private static User testUserBooker3;
 
     @BeforeAll
     static void init() {
@@ -28,6 +33,16 @@ class UserServiceIntTest {
         testUserBooker = User.builder()
                 .name("bookerUser")
                 .email("booker@user.com")
+                .build();
+
+        testUserBooker2 = User.builder()
+                .name("bookerUser2")
+                .email("booker2@user.com")
+                .build();
+
+        testUserBooker3 = User.builder()
+                .name("bookerUser3")
+                .email("booker3@user.com")
                 .build();
 
     }
@@ -68,6 +83,17 @@ class UserServiceIntTest {
         Assertions.assertEquals(newUserFromDb.getName(), newName);
         Assertions.assertEquals(newUserFromDb.getEmail(), newEmail);
 
+    }
+
+    @Test
+    void testGetAllUsers() {
+        User newUser1 = userService.addNew(testUserBooker2);
+        User newUser2 = userService.addNew(testUserBooker2);
+
+        Set<User> userList = userService.getAll();
+
+        Assertions.assertTrue(userList.contains(newUser1));
+        Assertions.assertTrue(userList.contains(newUser2));
     }
 
 }

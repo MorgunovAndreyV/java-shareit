@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,6 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.exception.BookingControllerBadRequestException;
+import ru.practicum.shareit.exception.BookingValidationException;
+import ru.practicum.shareit.handler.ErrorHandler;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -23,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,6 +42,9 @@ class BookingControllerTest {
 
     @MockBean
     BookingService bookingService;
+
+    @MockBean
+    ErrorHandler errorHandler;
 
     @Autowired
     private MockMvc mvc;
@@ -186,7 +195,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void getAllForOwnerByState() throws Exception {
+    void testGetAllForOwnerByState() throws Exception {
         List<Booking> bookingList = new ArrayList<>();
         BookingDto dto = testBookingDtoIn;
         dto.setId(1L);
@@ -213,5 +222,38 @@ class BookingControllerTest {
 
     }
 
+
+    @Test
+    void testBookingValidationExceptionFailsController() throws Exception {
+        BookingDto dto = testBookingDtoIn;
+        dto.setId(1L);
+        Booking testBooking2 = BookingMapper.toEntity(dto);
+
+        when(bookingService.addNew(Mockito.any(), anyLong())).thenThrow(BookingValidationException.class);
+
+        mvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(testBooking2))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetAllForUsersByStateFailedByStateUnknown() throws Exception {
+        /*when(bookingService.getBookingsFilteredByState(Mockito.anyLong(), Mockito.anyBoolean(), Mockito.any(),
+                Mockito.any(), Mockito.any()))
+                .thenThrow(BookingControllerBadRequestException.class);*/
+
+        mvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "TEST_TEST_TEST")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
 
 }

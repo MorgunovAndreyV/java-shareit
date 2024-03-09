@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.RecordNotFoundException;
-import ru.practicum.shareit.exception.UserStorageException;
 import ru.practicum.shareit.exception.UserValidationException;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -22,7 +21,7 @@ public class UserService {
         return new HashSet<>(userRepository.findAll());
     }
 
-    public User addNew(User user) throws UserStorageException, UserValidationException {
+    public User addNew(User user) throws UserValidationException {
         Set<User> userList = getAll();
 
         validateUserData(user, userList);

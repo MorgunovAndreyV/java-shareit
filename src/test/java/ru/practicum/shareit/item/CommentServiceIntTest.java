@@ -97,9 +97,11 @@ class CommentServiceIntTest {
         }
         try {
             TimeUnit.SECONDS.sleep(4);
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
         Comment newComment = commentService.addNew(testItem.getId(), testUserBooker.getId(), testCommentDto1);
 
         Assertions.assertEquals(testCommentDto1.getText(), newComment.getText());

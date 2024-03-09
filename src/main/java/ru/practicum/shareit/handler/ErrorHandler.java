@@ -59,17 +59,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse handleBookingControllerBadReques(final BookingControllerBadRequestException e) {
-        log.error(String.format(e.getMessage()));
-        return new ExceptionResponse(
-                String.format(e.getMessage())
-        );
-    }
-
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionResponse handleCommonUserStorageException(final UserStorageException e) {
+    public ExceptionResponse handleBookingControllerBadRequest(final BookingControllerBadRequestException e) {
         log.error(String.format(e.getMessage()));
         return new ExceptionResponse(
                 String.format(e.getMessage())
@@ -84,24 +74,5 @@ public class ErrorHandler {
                 String.format(e.getMessage())
         );
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionResponse handleRecordNotFoundException(final StoredDataConflictException e) {
-        log.error(String.format(e.getMessage()));
-        return new ExceptionResponse(
-                String.format(e.getMessage())
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse handleForbiddenAction(final ForbiddenActionException e) {
-        log.error(String.format(e.getMessage()));
-        return new ExceptionResponse(
-                String.format(e.getMessage())
-        );
-    }
-
 
 }

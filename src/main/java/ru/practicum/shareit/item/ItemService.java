@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ItemStorageException;
 import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.exception.RecordNotFoundException;
 import ru.practicum.shareit.exception.UserValidationException;
@@ -28,7 +27,7 @@ public class ItemService {
         return itemRepository.findByOwnerId(id);
     }
 
-    public Item addNew(Item item, Long id) throws ItemStorageException {
+    public Item addNew(Item item, Long id) {
         validateItemData(item);
         User user = userService.getUserById(id);
         itemAlreadyExists(item, itemRepository.findAll());

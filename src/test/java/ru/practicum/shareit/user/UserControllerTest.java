@@ -14,6 +14,8 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
     private static User testUser1;
+    private static User testUser2;
 
     @MockBean
     UserService userService;
@@ -44,6 +47,42 @@ class UserControllerTest {
                 .name("Test user name")
                 .email("testuser@mail.ru")
                 .build();
+
+        testUser2 = User.builder()
+                .id(2L)
+                .name("Test user name 2")
+                .email("testuser2@mail.ru")
+                .build();
+
+    }
+
+    @Test
+    void testGetAll() throws Exception {
+        Set<User> userList = new HashSet<>();
+        userList.add(testUser1);
+        userList.add(testUser2);
+
+        when(userService.getAll())
+                .thenReturn(userList);
+
+        mvc.perform(get("/users")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id",
+                        is(testUser1.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name",
+                        is(testUser1.getName())))
+                .andExpect(jsonPath("$[0].email",
+                        is(testUser1.getEmail())))
+                .andExpect(jsonPath("$[1].id",
+                        is(testUser2.getId()), Long.class))
+                .andExpect(jsonPath("$[1].name",
+                        is(testUser2.getName())))
+                .andExpect(jsonPath("$[1].email",
+                        is(testUser2.getEmail())));
 
     }
 

@@ -8,8 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.config.ContextConfig;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
@@ -323,5 +326,30 @@ class BookingServiceIntTest {
         Assertions.assertTrue(foundBookingsOwnerNoPage.contains(testBooking));
     }
 
+    @Test
+    void testGetLastBookingForItemDto() {
+
+        ItemDto itemDto = ItemMapper.toDto(testItem2);
+        bookingService.setLastBooking(itemDto);
+
+        BookingDto bookingDto = BookingMapper.toDto(testBooking3);
+        bookingDto.setBookerId(bookingDto.getBooker().getId());
+
+        Assertions.assertTrue(bookingDto.equals(itemDto.getLastBooking()));
+
+    }
+
+    @Test
+    void testGetNextBookingForItemDto() {
+
+        ItemDto itemDto = ItemMapper.toDto(testItem);
+        bookingService.setNextBooking(itemDto);
+
+        BookingDto bookingDto = BookingMapper.toDto(testBooking);
+        bookingDto.setBookerId(bookingDto.getBooker().getId());
+
+        Assertions.assertTrue(bookingDto.equals(itemDto.getNextBooking()));
+
+    }
 
 }
