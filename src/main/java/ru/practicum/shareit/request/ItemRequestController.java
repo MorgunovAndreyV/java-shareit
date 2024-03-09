@@ -72,11 +72,9 @@ public class ItemRequestController {
                 .collect(Collectors.toList());
     }
 
-
     @PostMapping
     public ItemRequestDto addNew(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemRequestDto itemRequestDto) {
         return ItemRequestMapper.toDto(itemRequestService.addNew(ItemRequestMapper.toEntity(itemRequestDto), userId));
     }
-
 
 }

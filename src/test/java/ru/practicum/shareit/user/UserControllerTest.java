@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.UserValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -38,7 +39,7 @@ class UserControllerTest {
     ObjectMapper mapper;
 
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -163,5 +164,20 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    void testUserValidationExceptionFailsController() throws Exception {
+        UserDto userDto1 = UserMapper.toDto(testUser1);
+
+        when(userService.addNew(Mockito.any())).thenThrow(new UserValidationException("test"));
+
+        mvc.perform(post("/users")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(userDto1))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

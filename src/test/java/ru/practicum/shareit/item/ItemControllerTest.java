@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.exception.CommentValidationException;
+import ru.practicum.shareit.exception.ItemValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -52,7 +54,7 @@ class ItemControllerTest {
     CommentService commentService;
 
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     @BeforeAll
     static void init() {
@@ -232,5 +234,35 @@ class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id",
                         is(testComment2.getId()), Long.class));
+    }
+
+    @Test
+    void testItemValidationExceptionFailsController() throws Exception {
+        ItemDto itemDto = ItemMapper.toDto(testItem1);
+
+        when(itemService.addNew(Mockito.any(), Mockito.anyLong())).thenThrow(new ItemValidationException("test"));
+
+        mvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCommentValidationExceptionFailsController() throws Exception {
+        CommentDto commentDto = CommentMapper.toDto(testComment1);
+
+        when(commentService.addNew(Mockito.anyLong(), Mockito.anyLong(), Mockito.any())).thenThrow(new CommentValidationException("test"));
+
+        mvc.perform(post("/items/{id}/comment", 1L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(commentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
