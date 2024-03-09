@@ -23,15 +23,4 @@ public class CommentMapper {
                 .build();
     }
 
-    public static void fillFromDto(CommentDto dto, Comment comment) {
-        if (dto.getText() != null) {
-            comment.setText(dto.getText());
-        }
-
-        if (dto.getCreated() != null) {
-            comment.setCreated(dto.getCreated().truncatedTo(ChronoUnit.MILLIS));
-        }
-
-    }
-
 }

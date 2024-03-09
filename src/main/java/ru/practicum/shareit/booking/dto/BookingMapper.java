@@ -30,27 +30,4 @@ public class BookingMapper {
                 .build();
     }
 
-    public static void fillFromDto(BookingDto bookingDto, Booking booking) {
-        if (bookingDto.getStart() != null) {
-            booking.setStart(bookingDto.getStart().truncatedTo(ChronoUnit.MILLIS));
-        }
-
-        if (bookingDto.getEnd() != null) {
-            booking.setEnd(bookingDto.getEnd().truncatedTo(ChronoUnit.MILLIS));
-        }
-
-        if (bookingDto.getStatus() != null) {
-            booking.setStatus(bookingDto.getStatus());
-        }
-
-        if (bookingDto.getBooker() != null) {
-            booking.setBooker(UserMapper.toEntity(bookingDto.getBooker()));
-        }
-
-        if (bookingDto.getItem() != null) {
-            booking.setItem(ItemMapper.toEntity(bookingDto.getItem()));
-        }
-
-    }
-
 }

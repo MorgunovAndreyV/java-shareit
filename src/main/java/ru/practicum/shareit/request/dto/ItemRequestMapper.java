@@ -22,15 +22,4 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static void fillFromDto(ItemRequestDto dto, ItemRequest request) {
-        if (dto.getCreated() != null) {
-            request.setCreated(dto.getCreated().truncatedTo(ChronoUnit.MILLIS));
-        }
-
-        if (dto.getDescription() != null) {
-            request.setDescription(dto.getDescription());
-        }
-
-    }
-
 }
