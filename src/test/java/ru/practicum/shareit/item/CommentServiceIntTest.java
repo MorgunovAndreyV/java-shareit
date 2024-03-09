@@ -85,6 +85,14 @@ class CommentServiceIntTest {
             testItem = itemService.addNew(testItem, testUserOwner.getId());
         }
 
+        if (testBooking.getId() == null) {
+            testBookingDto1.setItemId(testItem.getId());
+            testBookingDto1.setStart(LocalDateTime.now().plusSeconds(4));
+            testBookingDto1.setEnd(LocalDateTime.now().plusDays(2));
+            Long bookingId1 = bookingService.addNew(testBookingDto1, testUserBooker.getId()).getId();
+            testBooking = bookingService.getBookingById(bookingId1);
+        }
+
     }
 
     @Test
