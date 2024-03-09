@@ -9,7 +9,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.ContextConfig;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

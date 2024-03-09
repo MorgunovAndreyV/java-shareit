@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class ItemController {
         }
 
         List<CommentDto> commentDtos = commentService.getByItemId(item.getId()).stream()
-                        .map(CommentMapper::toDto).collect(Collectors.toList());
+                .map(CommentMapper::toDto).collect(Collectors.toList());
         commentDtos.sort(CommentDtoComparators.compareCommentDtosById);
 
         itemDto.setComments(commentDtos);
