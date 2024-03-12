@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.comparators.CommentDtoComparators;
 import ru.practicum.shareit.comparators.ItemComparators;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
@@ -51,8 +52,12 @@ public class ItemController {
             bookingService.setLastBooking(itemDto);
             bookingService.setNextBooking(itemDto);
         }
-        itemDto.setComments(commentService.getByItemId(item.getId()).stream()
-                .map(CommentMapper::toDto).collect(Collectors.toList()));
+
+        List<CommentDto> commentDtos = commentService.getByItemId(item.getId()).stream()
+                .map(CommentMapper::toDto).collect(Collectors.toList());
+        commentDtos.sort(CommentDtoComparators.compareCommentDtosById);
+
+        itemDto.setComments(commentDtos);
 
 
         return itemDto;

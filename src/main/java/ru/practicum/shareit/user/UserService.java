@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.RecordNotFoundException;
-import ru.practicum.shareit.exception.UserStorageException;
 import ru.practicum.shareit.exception.UserValidationException;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,7 +21,7 @@ public class UserService {
         return new HashSet<>(userRepository.findAll());
     }
 
-    public User addNew(User user) throws UserStorageException, UserValidationException {
+    public User addNew(User user) throws UserValidationException {
         Set<User> userList = getAll();
 
         validateUserData(user, userList);
@@ -60,12 +57,7 @@ public class UserService {
     }
 
     public void delete(Long id) throws RecordNotFoundException {
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            throw new RecordNotFoundException("Пользователь с id " + id + " не найден");
-        }
-
+        getUserById(id);
         userRepository.deleteById(id);
 
     }
@@ -94,8 +86,4 @@ public class UserService {
 
     }
 
-    List<User> getUserByEmail(String email, Set<User> userList) {
-        return userList.stream()
-                .filter(user -> email.equals(user.getEmail())).collect(Collectors.toList());
-    }
 }

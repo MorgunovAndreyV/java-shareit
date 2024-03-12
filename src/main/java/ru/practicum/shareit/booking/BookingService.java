@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -113,14 +115,15 @@ public class BookingService {
             bookingRepository.save(booking);
 
         } else {
-            throw new RecordNotFoundException("Для подтвеждения данным пользователем с id " + id +
+            throw new RecordNotFoundException("Для подтвеждения данным пользователем с id " + userId +
                     "не найдено бронирования с id " + id);
         }
 
         return booking;
     }
 
-    public List<Booking> getBookingsFilteredByState(Long userId, Boolean isOwner, State state) {
+    public List<Booking> getBookingsFilteredByState(Long userId, Boolean isOwner, State state,
+                                                    Integer numberFrom, Integer pageSize) {
         if (userId == null && !isOwner) {
             throw new BookingValidationException("Отсутствует id автора брони вещи");
         }
@@ -129,35 +132,89 @@ public class BookingService {
             throw new BookingValidationException("Отсутствует id хозяина вещи");
         }
 
+        PageRequest pageRequest = null;
+
+        if (pageSize != null && numberFrom != null) {
+            if (pageSize < 1 || numberFrom < 0) {
+                throw new BookingValidationException("Некорректные параметры запроса с постраничным выводом");
+
+            }
+            Sort sortByStartDate = Sort.by(Sort.Direction.DESC, "start");
+            pageRequest = PageRequest.of(numberFrom > 0 ? numberFrom / pageSize : 0, pageSize, sortByStartDate);
+
+        }
+
         userService.getUserById(userId);
 
         switch (state) {
             case ALL: {
-                return !isOwner ? bookingRepository.findByBookerId(userId) :
-                        bookingRepository.findByItemOwnerId(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findByBookerId(userId, pageRequest).toList() :
+                            bookingRepository.findByItemOwnerId(userId, pageRequest).toList();
+                } else {
+                    return !isOwner ? bookingRepository.findByBookerId(userId) :
+                            bookingRepository.findByItemOwnerId(userId);
+
+                }
+
             }
 
             case PAST: {
-                return !isOwner ? bookingRepository.findPastBookingsForBooker(userId) :
-                        bookingRepository.findPastBookingsForOwner(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findPastBookingsForBooker(userId, pageRequest).toList() :
+                            bookingRepository.findPastBookingsForOwner(userId, pageRequest).toList();
+                } else {
+                    return !isOwner ? bookingRepository.findPastBookingsForBooker(userId) :
+                            bookingRepository.findPastBookingsForOwner(userId);
+                }
+
             }
 
             case FUTURE: {
-                return !isOwner ? bookingRepository.findFutureBookingsForBooker(userId) :
-                        bookingRepository.findFutureBookingsForOwner(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findFutureBookingsForBooker(userId, pageRequest).toList() :
+                            bookingRepository.findFutureBookingsForOwner(userId, pageRequest).toList();
+
+                } else {
+                    return !isOwner ? bookingRepository.findFutureBookingsForBooker(userId) :
+                            bookingRepository.findFutureBookingsForOwner(userId);
+
+                }
+
             }
 
             case CURRENT: {
-                return !isOwner ? bookingRepository.findCurrentBookingsForBooker(userId) :
-                        bookingRepository.findCurrentBookingsForOwner(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findCurrentBookingsForBooker(userId, pageRequest).toList() :
+                            bookingRepository.findCurrentBookingsForOwner(userId, pageRequest).toList();
+                } else {
+                    return !isOwner ? bookingRepository.findCurrentBookingsForBooker(userId) :
+                            bookingRepository.findCurrentBookingsForOwner(userId);
+
+                }
+
             }
             case WAITING: {
-                return !isOwner ? bookingRepository.findWaitingBookingsForBooker(userId) :
-                        bookingRepository.findWaitingBookingsForOwner(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findWaitingBookingsForBooker(userId, pageRequest).toList() :
+                            bookingRepository.findWaitingBookingsForOwner(userId, pageRequest).toList();
+                } else {
+                    return !isOwner ? bookingRepository.findWaitingBookingsForBooker(userId) :
+                            bookingRepository.findWaitingBookingsForOwner(userId);
+
+                }
+
             }
             case REJECTED: {
-                return !isOwner ? bookingRepository.findRejectedBookingsForBooker(userId) :
-                        bookingRepository.findRejectedBookingsForOwner(userId);
+                if (pageRequest != null) {
+                    return !isOwner ? bookingRepository.findRejectedBookingsForBooker(userId, pageRequest).toList() :
+                            bookingRepository.findRejectedBookingsForOwner(userId, pageRequest).toList();
+                } else {
+                    return !isOwner ? bookingRepository.findRejectedBookingsForBooker(userId) :
+                            bookingRepository.findRejectedBookingsForOwner(userId);
+
+                }
+
             }
             default: {
                 return null;
@@ -176,7 +233,7 @@ public class BookingService {
 
     private void validateBookingData(BookingDto bookingDto, Long userId) {
         if (bookingDto.getItemId() == null) {
-            throw new BookingValidationException("ИД бронируемой вещи не может быть пустой");
+            throw new BookingValidationException("ИД бронируемой вещи не может быть пустым");
 
         }
 

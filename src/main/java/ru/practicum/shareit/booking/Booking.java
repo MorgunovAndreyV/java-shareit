@@ -44,10 +44,6 @@ public class Booking {
         setStatus(BookingStatus.REJECTED);
     }
 
-    public void setInitStatus() {
-        setStatus(BookingStatus.WAITING);
-    }
-
 }
 
 

@@ -16,6 +16,7 @@ public class ItemDto {
     private BookingDto lastBooking;
     private BookingDto nextBooking;
     private List<CommentDto> comments;
+    private Long requestId;
 
     public void setLastBooking(BookingDto bookingDto) {
         this.lastBooking = bookingDto;
