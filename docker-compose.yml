@@ -14,7 +14,7 @@ services:
       - POSTGRES_DB=shareit
 
   server:
-    build: .\server
+    build: ./server
     #container_name: shareit-server
     image: shareit-server
     ports:
@@ -27,7 +27,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=shareit
 
   gateway:
-    build: .\gateway
+    build: ./gateway
     image: shareit-gateway
     ports:
       - "8080:8080"

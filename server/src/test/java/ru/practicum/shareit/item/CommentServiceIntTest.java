@@ -19,6 +19,9 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -115,11 +118,19 @@ class CommentServiceIntTest {
 
         Comment newComment = commentService.addNew(testItem.getId(), testUserBooker.getId(), testCommentDto1);
 
+        List<Comment> commentFromDb = commentService.getByItemId(testItem.getId());
+
+        Set<Comment> commentFromDbSet = new HashSet<>(commentFromDb);
+
+        Assertions.assertTrue(commentFromDbSet.contains(newComment));
+        Assertions.assertTrue(commentFromDb.contains(newComment));
+
         Assertions.assertEquals(testCommentDto1.getText(), newComment.getText());
         Assertions.assertNotEquals(newComment.getCreated(), null);
         Assertions.assertNotEquals(newComment.getId(), null);
         Assertions.assertEquals(newComment.getAuthor().getId(), testUserBooker.getId());
         Assertions.assertEquals(newComment.getItem().getId(), testItem.getId());
+
 
     }
 

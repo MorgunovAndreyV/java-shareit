@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.exception.BookingControllerBadRequestException;
+import ru.practicum.shareit.exception.ItemControllerBadRequestException;
+import ru.practicum.shareit.exception.RequestControllerBadRequestException;
+import ru.practicum.shareit.exception.UserControllerBadRequestException;
 
 @Slf4j
 @RestControllerAdvice
@@ -47,6 +50,5 @@ public class ErrorHandler {
                 String.format(e.getMessage())
         );
     }
-
 
 }

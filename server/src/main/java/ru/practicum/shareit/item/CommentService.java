@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class CommentService {
 
         commentFromDto.setAuthor(user);
         commentFromDto.setItem(item);
-        commentFromDto.setCreated(LocalDateTime.now());
+        commentFromDto.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
 
         Comment newComment = commentRepository.save(commentFromDto);
         log.info("Новый комментарий добавлен успешно. id:" + newComment.getId());

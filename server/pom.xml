@@ -69,6 +69,16 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/ShareItServer.class</exclude>
+                        <exclude>**/BookingComparators.class</exclude>
+                        <exclude>**/CommentDtoComparators.class</exclude>
+                        <exclude>**/ItemComparators.class</exclude>
+                        <exclude>**/ItemRequestDtoComparators.class</exclude>
+                        <exclude>**/UserComparators.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
