@@ -44,11 +44,8 @@ public class ItemRequestController {
     }
 
     private void validatePagination(Integer numberFrom, Integer pageSize) {
-        if (pageSize != null && numberFrom != null) {
-            if (pageSize < 1 || numberFrom < 0) {
-                throw new RequestControllerBadRequestException("Некорректные параметры запроса с постраничным выводом");
-
-            }
+        if ((pageSize != null && numberFrom != null) && (pageSize < 1 || numberFrom < 0)) {
+            throw new RequestControllerBadRequestException("Некорректные параметры запроса с постраничным выводом");
 
         }
 
