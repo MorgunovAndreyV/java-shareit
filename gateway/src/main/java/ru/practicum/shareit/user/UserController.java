@@ -61,11 +61,8 @@ public class UserController {
     }
 
     private void validateEmail(UserDto user) {
-        if (user.getEmail() != null) {
-            if (!user.getEmail().contains("@")) {
-                throw new UserControllerBadRequestException("Некорректный формат почты");
-
-            }
+        if (((user.getEmail() != null)) && !user.getEmail().contains("@")) {
+            throw new UserControllerBadRequestException("Некорректный формат почты");
 
         }
 
